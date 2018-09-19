@@ -42,5 +42,5 @@ func Recoru(ev *api.MessageEvent, client *api.Client) {
 		return
 	}
 
-	log.Printf("[INFO] %s", string(body[:]))
+	log.Printf("[INFO] Status: %s Body: %s", res.Status, string(body[:]))
 }
