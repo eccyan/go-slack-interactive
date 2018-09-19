@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -39,6 +41,17 @@ func Recoru(ev *api.MessageEvent, client *api.Client) {
 	}
 
 	log.Printf("[INFO] Body: %s", squish(string(body[:])))
+
+	resp, err = punch(PunchType(In), env)
+
+	defer resp.Body.Close()
+	body, err = ioutil.ReadAll(resp.Body)
+
+	if nil != err {
+		log.Println("[ERROR] Failed to read the body", err)
+	}
+
+	log.Printf("[INFO] Body: %s", squish(string(body[:])))
 }
 
 func login(env envConfig) (*http.Response, error) {
@@ -56,6 +69,38 @@ func login(env envConfig) (*http.Response, error) {
 	log.Printf("[INFO] Status: %s", resp.Status)
 
 	return resp, nil
+}
+
+type PunchType string
+
+const (
+	In  PunchType = "1"
+	Out PunchType = "2"
+)
+
+type PunchParam struct {
+	PunchButtonID         PunchType `json:"punchButtonId"`
+	WorkPlaceID           string    `json:"workPlaceId"`
+	SearchedVersionNumber string    `json:"searchedVersionNo"`
+}
+
+const (
+	SEARCHED_VERSION_NUMBER string = "2"
+)
+
+func punch(pt PunchType, env envConfig) (*http.Response, error) {
+	input, err := json.Marshal(PunchParam{PunchButtonID: pt, WorkPlaceID: env.RecoruWorkPlaceID, SearchedVersionNumber: SEARCHED_VERSION_NUMBER})
+
+	resp, err := http.Post("http://app.recoru.in/ap/home/doPunch", "application/json", bytes.NewBuffer(input))
+	if err != nil {
+		log.Printf("[ERROR] Failed to post var: %s", err)
+		return nil, err
+	}
+
+	log.Printf("[INFO] Status: %s", resp.Status)
+
+	return resp, nil
+
 }
 
 func squish(s string) string {
