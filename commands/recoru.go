@@ -29,21 +29,33 @@ func Recoru(ev *api.MessageEvent, client *api.Client) {
 	values.Add("authId", env.RecoruAuthID)
 	values.Add("password", env.RecoruPassword)
 
-	res, err := http.PostForm("https://app.recoru.in/ap/login", values)
-	if err != nil {
-		log.Printf("[ERROR] Failed to post var: %s", err)
-		return
-	}
+	resp, err := login(env)
 
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
 
 	if nil != err {
 		log.Println("[ERROR] Failed to read the body", err)
-		return
 	}
 
-	log.Printf("[INFO] Status: %s Body: %s", res.Status, squish(string(body[:])))
+	log.Printf("[INFO] Body: %s", squish(string(body[:])))
+}
+
+func login(env envConfig) (*http.Response, error) {
+	values := url.Values{}
+	values.Add("contractId", env.RecoruWorkPlaceID)
+	values.Add("authId", env.RecoruAuthID)
+	values.Add("password", env.RecoruPassword)
+
+	resp, err := http.PostForm("https://app.recoru.in/ap/login", values)
+	if err != nil {
+		log.Printf("[ERROR] Failed to post var: %s", err)
+		return nil, err
+	}
+
+	log.Printf("[INFO] Status: %s", resp.Status)
+
+	return resp, nil
 }
 
 func squish(s string) string {
