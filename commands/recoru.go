@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"regexp"
 
 	"github.com/kelseyhightower/envconfig"
 	api "github.com/nlopes/slack"
@@ -42,5 +43,10 @@ func Recoru(ev *api.MessageEvent, client *api.Client) {
 		return
 	}
 
-	log.Printf("[INFO] Status: %s Body: %s", res.Status, string(body[:]))
+	log.Printf("[INFO] Status: %s Body: %s", res.Status, squish(string(body[:])))
+}
+
+func squish(s string) string {
+	space := regexp.MustCompile(`\s+`)
+	return space.ReplaceAllString(s, " ")
 }
