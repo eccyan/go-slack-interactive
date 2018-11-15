@@ -28,39 +28,39 @@ func NewHey(callbackID string) *Hey {
 func (hey *Hey) ServeMessage(ev *api.MessageEvent, client *api.Client) {
 	attachment := api.Attachment{
 		CallbackID: hey.callbackID,
-		Text:       "Which beer do you want? :beer:",
-		Color:      "#f9a41b",
+		Text:       "どの :beer: が欲しいまるか？  ",
+		Color:      "#78c62c",
 		Actions: []api.AttachmentAction{
 			{
 				Name: actionSelectName,
 				Type: "select",
 				Options: []api.AttachmentActionOption{
 					{
-						Text:  "Asahi Super Dry",
+						Text:  "ｱｻﾋｨｽｩﾊﾟｧﾄﾞｩﾙｧｧｧｧｲ",
 						Value: "Asahi Super Dry",
 					},
 					{
-						Text:  "Kirin Lager Beer",
+						Text:  "キリンラガービール",
 						Value: "Kirin Lager Beer",
 					},
 					{
-						Text:  "Sapporo Black Label",
+						Text:  "サッポロブラックラベル",
 						Value: "Sapporo Black Label",
 					},
 					{
-						Text:  "Suntory Malts",
+						Text:  "モルツ",
 						Value: "Suntory Malts",
 					},
 					{
-						Text:  "Yona Yona Ale",
+						Text:  "Yona Yona エール",
 						Value: "Yona Yona Ale",
 					},
 					{
-						Text:  "Plemiun Molt",
+						Text:  "プレミアムモルツ",
 						Value: "Plemiun Molt",
 					},
 					{
-						Text:  "Yebisu",
+						Text:  "ヱビス",
 						Value: "Yebisu",
 					},
 				},
@@ -68,7 +68,7 @@ func (hey *Hey) ServeMessage(ev *api.MessageEvent, client *api.Client) {
 
 			{
 				Name:  actionCancelName,
-				Text:  "Cancel",
+				Text:  "やっぱりやめる",
 				Type:  "button",
 				Style: "danger",
 			},
@@ -101,18 +101,18 @@ func actionSelect(callback *api.AttachmentActionCallback, w http.ResponseWriter)
 
 	// Overwrite original drop down message.
 	originalMessage := callback.OriginalMessage
-	originalMessage.Attachments[0].Text = fmt.Sprintf("OK to order %s ?", strings.Title(value))
+	originalMessage.Attachments[0].Text = fmt.Sprintf("%s を頼んじゃうまるよ？", strings.Title(value))
 	originalMessage.Attachments[0].Actions = []api.AttachmentAction{
 		{
 			Name:  actionStartName,
-			Text:  "Yes",
+			Text:  "頼んで",
 			Type:  "button",
 			Value: "start",
 			Style: "primary",
 		},
 		{
 			Name:  actionCancelName,
-			Text:  "No",
+			Text:  "やっぱダメ",
 			Type:  "button",
 			Style: "danger",
 		},
@@ -124,12 +124,12 @@ func actionSelect(callback *api.AttachmentActionCallback, w http.ResponseWriter)
 }
 
 func actionStart(callback *api.AttachmentActionCallback, w http.ResponseWriter) {
-	title := ":ok: your order was submitted! yay!"
+	title := "あなたの願いを受けたわまったまるよ :kira:"
 	responseMessage(w, callback.OriginalMessage, title, "")
 }
 
 func actionCancel(callback *api.AttachmentActionCallback, w http.ResponseWriter) {
-	title := fmt.Sprintf(":x: @%s canceled the request", callback.User.Name)
+	title := fmt.Sprintf(" @%s 願いはキャンセルしたまる :cry:", callback.User.Name)
 	responseMessage(w, callback.OriginalMessage, title, "")
 }
 
